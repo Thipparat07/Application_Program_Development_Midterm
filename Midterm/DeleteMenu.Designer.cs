@@ -42,7 +42,7 @@
             // dataGridView1
             // 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(3, 64);
+            dataGridView1.Location = new Point(3, 56);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 51;
             dataGridView1.Size = new Size(794, 303);
@@ -53,7 +53,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(314, 9);
+            label1.Location = new Point(314, 1);
             label1.Name = "label1";
             label1.Size = new Size(169, 38);
             label1.TabIndex = 28;
@@ -62,17 +62,18 @@
             // lblConfirmInfo
             // 
             lblConfirmInfo.AutoSize = true;
-            lblConfirmInfo.ForeColor = Color.Red;
-            lblConfirmInfo.Location = new Point(12, 386);
+            lblConfirmInfo.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblConfirmInfo.ForeColor = Color.Black;
+            lblConfirmInfo.Location = new Point(3, 371);
             lblConfirmInfo.Name = "lblConfirmInfo";
-            lblConfirmInfo.Size = new Size(81, 20);
+            lblConfirmInfo.Size = new Size(108, 28);
             lblConfirmInfo.TabIndex = 29;
             lblConfirmInfo.Text = "ข้อมูลที่จะลบ";
             // 
             // btnDelete
             // 
             btnDelete.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnDelete.Location = new Point(335, 406);
+            btnDelete.Location = new Point(494, 462);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(136, 51);
             btnDelete.TabIndex = 30;
@@ -84,7 +85,7 @@
             // 
             button1.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
             button1.ForeColor = Color.Red;
-            button1.Location = new Point(652, 406);
+            button1.Location = new Point(652, 462);
             button1.Name = "button1";
             button1.Size = new Size(136, 51);
             button1.TabIndex = 31;
@@ -96,7 +97,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 469);
+            ClientSize = new Size(800, 525);
             Controls.Add(button1);
             Controls.Add(btnDelete);
             Controls.Add(lblConfirmInfo);

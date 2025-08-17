@@ -1,4 +1,5 @@
 ﻿using Midterm.Models;
+using System.Windows.Forms;
 
 namespace Midterm
 {
@@ -8,6 +9,176 @@ namespace Midterm
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            LoadMenuData();
+
+
+            // ตั้งค่า NumericUpDown
+            numericUpDownNumber.Minimum = 1;   // จำนวนสินค้าต่ำสุด 1
+            numericUpDownNumber.Maximum = 1000; // ตามต้องการ
+            numericUpDownNumber.Value = 1;      // ค่าเริ่มต้น
+
+            // ตั้งค่า ComboBox วิธีจ่ายเงิน
+            comboBoxTrans.Items.Clear();
+            comboBoxTrans.Items.Add("เงินสด");
+            comboBoxTrans.Items.Add("เงินโอน");
+            comboBoxTrans.SelectedIndex = 0;
+
+            // ค่าเริ่มต้น Label จำนวนเงินรวม
+            label6.Text = "จำนวนเงินรวม: 0.00";
+
+            // ต่อ Event ValueChanged
+            numericUpDownNumber.ValueChanged += numericUpDownNumber_ValueChanged;
+
+            // กำหนดค่าเริ่มต้น Label ยอดรวม
+            labelTotalAmount.Text = "ยอดรวมทั้งหมด";
+
+        }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = txtSearch.Text.Trim();
+            LoadMenuData(searchText);
+        }
+
+        private void LoadMenuData(string searchText = "")
+        {
+            var data = context.Menus
+                              .Join(context.TypeCoffees,
+                                    m => m.Idtype,
+                                    t => t.Idtype,
+                                    (m, t) => new
+                                    {
+                                        m.Idmenu,
+                                        ชื่อเมนู = m.Name,
+                                        ประเภทเมนู = t.Name,
+                                        ประเภท = t.Type,
+                                        ราคา = m.Price
+                                    });
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+                data = data.Where(m => m.ชื่อเมนู.ToLower().Contains(searchText.ToLower()));
+
+            dataGridViewBuy.DataSource = data.ToList();
+            dataGridViewBuy.Columns["Idmenu"].Visible = false;
+        }
+
+
+        // ฟังก์ชันคำนวณราคารวม
+        private void UpdateTotalPrice()
+        {
+            if (dataGridViewBuy.SelectedRows.Count == 0)
+            {
+                label6.Text = "จำนวนเงินรวม: 0.00";
+                return;
+            }
+
+            var row = dataGridViewBuy.SelectedRows[0];
+            decimal price = Convert.ToDecimal(row.Cells["ราคา"].Value);
+            decimal totalPrice = price * numericUpDownNumber.Value;
+
+            label6.Text = "จำนวนเงินรวม: " + totalPrice.ToString("0.00");
+        }
+
+        // เรียกตอนเปลี่ยนแถว
+        private void DataGridViewBuy_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGridViewBuy.SelectedRows.Count == 0) return;
+
+            var row = dataGridViewBuy.SelectedRows[0];
+
+            label1.Text = "ชื่อเมนู: " + (row.Cells["ชื่อเมนู"].Value?.ToString() ?? "");
+            label2.Text = "ประเภทเมนู: " + (row.Cells["ประเภทเมนู"].Value?.ToString() ?? "");
+            label3.Text = "ประเภท: " + (row.Cells["ประเภท"].Value?.ToString() ?? "");
+            label4.Text = "ราคา: " + (row.Cells["ราคา"].Value?.ToString() ?? "");
+
+            // ตั้งค่า NumericUpDown
+            numericUpDownNumber.Minimum = 1;
+            numericUpDownNumber.Maximum = 1000;
+            numericUpDownNumber.Value = 1;
+
+            // ตั้งค่า ComboBox
+            if (comboBoxTrans.Items.Count > 0)
+                comboBoxTrans.SelectedIndex = 0;
+
+            // **อัปเดตราคารวมทันที**
+            UpdateTotalPrice();
+        }
+
+        // เรียกตอนเปลี่ยนจำนวนสินค้า
+        private void numericUpDownNumber_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateTotalPrice();
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSaveOrder_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewBuy.SelectedRows.Count == 0) return;
+
+            var row = dataGridViewBuy.SelectedRows[0];
+            int menuId = (int)row.Cells["Idmenu"].Value;
+            int quantity = (int)numericUpDownNumber.Value;
+            int trans = comboBoxTrans.SelectedItem.ToString() == "เงินโอน" ? 1 : 0;
+
+            var menu = context.Menus.FirstOrDefault(m => m.Idmenu == menuId);
+            if (menu == null) return;
+
+            // คำนวณราคารวม
+            int totalPrice = menu.Price * quantity;
+            label6.Text = "จำนวนเงินรวม: " + totalPrice.ToString("0.00");
+
+            var order = new Order
+            {
+                Idmenu = menuId,
+                Number = quantity,
+                Priceamount = totalPrice,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Trans = trans
+            };
+
+            context.Orders.Add(order);
+            context.SaveChanges();
+
+            MessageBox.Show("บันทึกคำสั่งซื้อเรียบร้อย");
+
+            // รีเซ็ตค่าและช่องค้นหา
+            ResetSelection();
+
+            // โหลดเมนูทั้งหมดใหม่
+            LoadMenuData();
+        }
+
+        private void ResetSelection()
+        {
+            // ยกเลิกการเลือกแถวใน DataGridView
+            dataGridViewBuy.ClearSelection();
+
+            // รีเซ็ต NumericUpDown
+            numericUpDownNumber.Value = numericUpDownNumber.Minimum;
+
+            // รีเซ็ต ComboBox
+            if (comboBoxTrans.Items.Count > 0)
+                comboBoxTrans.SelectedIndex = 0;
+
+            // รีเซ็ต Label จำนวนเงินรวม
+            label6.Text = "จำนวนเงินรวม: 0.00";
+
+            // รีเซ็ต Label ข้อมูลเมนู
+            label1.Text = "ชื่อเมนู:";
+            label2.Text = "ประเภทเมนู:";
+            label3.Text = "ประเภท:";
+            label4.Text = "ราคา:";
+
+            //รีเซ็ตช่องค้นหา**
+            txtSearch.Text = "";
         }
 
         private void btn_goto_page_addmenu_Click(object sender, EventArgs e)
@@ -44,27 +215,22 @@ namespace Midterm
                          where o.Date == selectedDate
                          select new
                          {
-                             MenuId = o.Idmenu,
-                             MenuName = m.Name,
-                             NumberSold = o.Number,
+                             ProductID = o.Idmenu,
+                             ProductName = m.Name,
+                             QuantitySold = o.Number,
                              UnitPrice = m.Price,
-                             Amount = o.Number * m.Price
+                             TotalAmount = o.Number * m.Price
                          };
 
-            dataGridViewReport.DataSource = result.ToList();
-            CalculateSum();
-        }
+            var list = result.ToList();
 
+            dataGridViewReport.DataSource = list;
 
-        private void CalculateSum()
-        {
-            decimal sum = 0;
-            foreach (DataGridViewRow row in dataGridViewReport.Rows)
-            {
-                if (row.Cells["Amount"].Value != null)
-                    sum += Convert.ToDecimal(row.Cells["Amount"].Value);
-            }
-            //txtsum.Text = sum.ToString("0.00");
+            // คำนวณยอดรวม
+            decimal totalAmount = list.Sum(x => x.TotalAmount);
+
+            // แสดงยอดรวม
+            labelTotalAmount.Text = "ยอดรวมทั้งหมด: " + totalAmount.ToString("0.00") + " บาท";
         }
 
 

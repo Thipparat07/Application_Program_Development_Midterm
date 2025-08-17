@@ -48,7 +48,7 @@ namespace Midterm
             string price = dataGridView1.CurrentRow.Cells["Price"].Value.ToString();
 
             // แสดงข้อมูลที่จะแสดงในกล่องข้อความ/Label
-            lblConfirmInfo.Text = $"ชื่อเมนู: {name}\nประเภท: {category} - {type}\nราคา: {price} บาท";
+            lblConfirmInfo.Text = $"ชื่อเมนู: {name}\nประเภทเมนู: {category}\nประเภท: {type}\nราคา: {price} บาท";
         }
 
         private void btnDelete_Click_1(object sender, EventArgs e)
@@ -67,6 +67,13 @@ namespace Midterm
             if (menu == null)
             {
                 MessageBox.Show("ไม่พบเมนูนี้");
+                return;
+            }
+
+            var orderCount = context.Orders.Count(o => o.Idmenu == selectedMenuId);
+            if (orderCount > 0)
+            {
+                MessageBox.Show("ไม่สามารถลบเมนูนี้ได้ เพราะมีคำสั่งซื้ออยู่ในระบบ");
                 return;
             }
 
