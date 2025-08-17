@@ -49,6 +49,7 @@
             btn_goto_page_edit = new Button();
             btn_goto_page_addmenu = new Button();
             tabPage3 = new TabPage();
+            labelTotalQuantity = new Label();
             labelTotalAmount = new Label();
             dataGridViewReport = new DataGridView();
             dateTimePicker1 = new DateTimePicker();
@@ -98,7 +99,6 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "ขายสินค้า";
             tabPage1.UseVisualStyleBackColor = true;
-            tabPage1.Click += tabPage1_Click;
             // 
             // txtSearch
             // 
@@ -283,6 +283,7 @@
             // 
             // tabPage3
             // 
+            tabPage3.Controls.Add(labelTotalQuantity);
             tabPage3.Controls.Add(labelTotalAmount);
             tabPage3.Controls.Add(dataGridViewReport);
             tabPage3.Controls.Add(dateTimePicker1);
@@ -294,10 +295,18 @@
             tabPage3.Text = "รายงานสรุปการขาย";
             tabPage3.UseVisualStyleBackColor = true;
             // 
+            // labelTotalQuantity
+            // 
+            labelTotalQuantity.AutoSize = true;
+            labelTotalQuantity.Location = new Point(346, 19);
+            labelTotalQuantity.Name = "labelTotalQuantity";
+            labelTotalQuantity.Size = new Size(0, 28);
+            labelTotalQuantity.TabIndex = 4;
+            // 
             // labelTotalAmount
             // 
             labelTotalAmount.AutoSize = true;
-            labelTotalAmount.Location = new Point(515, 21);
+            labelTotalAmount.Location = new Point(551, 19);
             labelTotalAmount.Name = "labelTotalAmount";
             labelTotalAmount.Size = new Size(0, 28);
             labelTotalAmount.TabIndex = 3;
@@ -367,5 +376,6 @@
         private TextBox txtSearch;
         private Label label8;
         private Label labelTotalAmount;
+        private Label labelTotalQuantity;
     }
 }

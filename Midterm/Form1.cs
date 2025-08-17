@@ -34,7 +34,8 @@ namespace Midterm
             numericUpDownNumber.ValueChanged += numericUpDownNumber_ValueChanged;
 
             // กำหนดค่าเริ่มต้น Label ยอดรวม
-            labelTotalAmount.Text = "ยอดรวมทั้งหมด";
+            labelTotalAmount.Text = "ยอดรวมทั้งหมด:";
+            labelTotalQuantity.Text = "จำนวนสินค้ารวม:";
 
         }
 
@@ -112,11 +113,6 @@ namespace Midterm
         private void numericUpDownNumber_ValueChanged(object sender, EventArgs e)
         {
             UpdateTotalPrice();
-        }
-
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void btnSaveOrder_Click(object sender, EventArgs e)
@@ -226,11 +222,15 @@ namespace Midterm
 
             dataGridViewReport.DataSource = list;
 
-            // คำนวณยอดรวม
+            // คำนวณยอดรวมเงิน
             decimal totalAmount = list.Sum(x => x.TotalAmount);
 
-            // แสดงยอดรวม
-            labelTotalAmount.Text = "ยอดรวมทั้งหมด: " + totalAmount.ToString("0.00") + " บาท";
+            // คำนวณจำนวนรวม
+            int totalQuantity = list.Sum(x => x.QuantitySold);
+
+            // แสดงผล
+            labelTotalAmount.Text = $"ยอดรวมทั้งหมด: {totalAmount:0.00} บาท";
+            labelTotalQuantity.Text = $"จำนวนสินค้ารวม: {totalQuantity} ชิ้น";
         }
 
 
